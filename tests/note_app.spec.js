@@ -34,7 +34,7 @@ describe('Note app', () => {
     await expect(errorDiv).toContainText('wrong credentials')
     await expect(errorDiv).toHaveCSS('border-style', 'solid')
     await expect(errorDiv).toHaveCSS('color', 'rgb(255, 0, 0)')
-    await expect(await page.getByText('Matti Luukkainen logged in')).not.toBeVisible()
+    await expect(page.getByText('Matti Luukkainen logged in')).not.toBeVisible()
   })  
 
   describe('when logged in', () => {
@@ -44,17 +44,23 @@ describe('Note app', () => {
 
     test('a new note can be created', async ({ page }) => {
       await createNote(page, 'a note created by playwright', true)
-      await expect(await page.getByText('a note created by playwright')).toBeVisible()
+      await expect(page.getByText('a note created by playwright')).toBeVisible()
     })
 
     describe('and a note exists', () => {
       beforeEach(async ({ page }) => {
-        await createNote(page, 'another note by playwright', true)
+        await createNote(page, 'first note', true)
+        await createNote(page, 'second note', true)
+        await createNote(page, 'third note', true)
       })
   
       test('importance can be changed', async ({ page }) => {
-        await page.getByRole('button', { name: 'make not important' }).click()
-        await expect(await page.getByText('make important')).toBeVisible()
+        await page.pause()
+        const otherNoteText = await page.getByText('second note')
+        const otherdNoteElement = await otherNoteText.locator('..')
+      
+        await otherdNoteElement.getByRole('button', { name: 'make not important' }).click()
+        await expect(otherdNoteElement.getByText('make important')).toBeVisible()
       })
     })
   })  
